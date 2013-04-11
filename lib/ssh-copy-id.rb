@@ -43,7 +43,7 @@ module SSHCopyID
   def self.execute options, ask_password
     identity_file = options[:identity] || DEFAULT_IDENTITY_FILE
     identity = File.readlines(File.expand_path identity_file).first.chomp
-    password = options[:password]
+    passwords = {}
     output = options[:output] || Class.new { def method_missing *args; end }.new
 
     options[:hosts].each do |host|
@@ -51,13 +51,21 @@ module SSHCopyID
       user, pass = user.split(':') if user
       user ||= options[:username] || ENV['USER']
       output.print "#{user}@#{host}: "
-      if pass.nil? && password.nil? && (ask_password || options.has_key?(:password))
-        password = HighLine.new.ask($/ + "Password: ") { |q| q.echo = '*' }
-      end
-      pass ||= password
+      password =
+        if pass
+          pass
+        elsif options[:password]
+          options[:password]
+        elsif passwords[user]
+          passwords[user]
+        elsif ask_password || options.has_key?(:password)
+          passwords[user] = HighLine.new.ask($/ + "Password: ") { |q| q.echo = '*' }
+        else
+          nil
+        end
 
       host, port = host.split(':')
-      Net::SSH.start(host, user, :port => port, :password => pass) do |ssh|
+      Net::SSH.start(host, user, :port => port, :password => password) do |ssh|
         result = ssh.exec!(yield identity)
         output.puts result
       end
