@@ -65,7 +65,7 @@ module SSHCopyID
         end
 
       host, port = host.split(':')
-      Net::SSH.start(host, user, :port => port, :password => password) do |ssh|
+      Net::SSH.start(host, user, :port => port || 22, :password => password) do |ssh|
         result = ssh.exec!(yield identity)
         output.puts result
       end
@@ -90,7 +90,7 @@ module SSHCopyID
           options[:username] = v
         end
 
-        opts.on('-p', '--password[=PASSWORD]', 'Password. Ask password if not given.') do |v|
+        opts.on('-p', '--password=PASSWORD', 'Password. Ask password if not given.') do |v|
           options[:password] = v
         end
 

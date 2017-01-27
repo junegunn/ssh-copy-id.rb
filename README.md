@@ -16,7 +16,7 @@ usage: ssh-copy-id.rb [-i IDENDITY] [-u USER] [-p PASSWORD] [USER[:PASSWORD]@]HO
 
     -i, --identity=IDENTITY          Identity file. Default: ~/.ssh/id_rsa.pub
     -u, --username=USERNAME          Username. Default: current user.
-    -p, --password[=PASSWORD]        Password. Ask password if not given.
+    -p, --password=PASSWORD          Password. Ask password if not given.
 ```
 
 ## Examples
